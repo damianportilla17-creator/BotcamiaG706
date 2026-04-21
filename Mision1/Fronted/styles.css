@@ -5,6 +5,8 @@ body {
     color: rgb(0, 103, 9);
 }
 .Perro1 {
+    border-radius: 8px;
+    box-shadow: 0 6px 6px rgba(0,0,0,0.6);
     width: 10%;
     height: 10%;
 }
