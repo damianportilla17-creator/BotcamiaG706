@@ -1,64 +1,4 @@
-from sklearn.feature_extraction.text import CountVectorizer
-# CountVectorizer convierte texto en un vector
-from sklearn.naive_bayes import MultinomialNB
-"""
-MultinomialNB modelo de inteligencia 
-artificial que aprende relaciones entre texto y respuestas
-"""
-from numpy import vectorize
-from sklearn.feature_extraction.text import CountVectorizer
-# CountVectorizer convierte texto en un vector
-from sklearn.naive_bayes import MultinomialNB
-"""
-MultinomialNB modelo de inteligencia
-artificial que aprende relaciones entre texto y respuestas
-"""
-#=========================================================
-# Función build_and_train_model
-#=========================================================
-def build_and_train_model(train_pairs):
-  # train_pairs: Lista de pares(pregunta, respuesta)
-  # Ejemplo [("hola","!Hola¡"),("adios","!Hasta Luego¡")]
-  # separamos las preguntas y respuestas en dos listas
-  questions = [q for q, _ in train_pairs] # Lista de preguntas
-  answers = [a for _, a in train_pairs] # Lista de respuestas
-  # creamos el vectorizador, que traducira el texto a numeros
-  vectorize = CountVectorizer()
-  # Entrenamos el vectorizador con las preguntas y las
-  # Convertimos en números
-  x = vectorize.fit_transform(questions)
-  # obtenemos una lista de respustas unicas (sin repetir)
-  unique_answers = sorted(set(answers))
-  # creamos un diccionario que asigne un numero a cada respuesta
-  # Ejemplo :{"!Hola¡":0, "!Hasta luego¡",1}
-  answer_to_label = {a: i for i, a in enumerate(unique_answers)}
-  # Creamos una lista con las etiquetas numericas de las respuestas
-  # Ejemplo :[0,1,0] Según la respuesta correspondiente a cada pregunta
-  y = [answer_to_label[a] for a in answers]
-  # Creamos el modelo Native Bayes (para clasificacion de texto)
-  model = MultinomialNB()
-  # Entrenamos el modelo con los datos numericos (preguntas -> respuestas)
-  model.fit(x, y)
-  # Devolvemos el modelo, el vectorizador y las respuestas unicas
-  return model, vectorize, unique_answers
-
-#===============================================
-# Función predict_answers
-#===============================================
-# esta función recibe un texto del usuario y devuelve la respuesta
-def predict_answers(model,vectorizer,unique_answers,user_text):
-  # convertir el texto del usuario a números
-  x = vectorizer.transform([user_text])
-  # Elmodelo predice la etiqueta(número) de la respuesta correcta
-  label = model.predict(x)[0]
-  return unique_answers[label]
-
-from enum import unique
-#=========================================================
-# PROGRAMA PRINCIPAL
-#=========================================================
-if __name__ == "__main__":
-  training_data = [
+training_data = [
     # Saludos y cortesía inicial
     ("hola", "¡Hola! ¿En qué puedo ayudarte hoy?"),
     ("buenos dias", "¡Buenos días! Espero que tengas un excelente día."),
@@ -179,17 +119,3 @@ if __name__ == "__main__":
     ("terminar chat", "Chat finalizado satisfactoriamente."),
     ("buen viaje", "¡Igualmente! Que tengas un excelente camino.")
   ]
-  # Entrenamos el modelo con los datos
-  model, vectorize, unique_answers = build_and_train_model(training_data)
-  # Mostrar un mensaje inicial al usuario
-  print("Chatboot supervisado listo. Escribe 'salir' para terminar. \n")
-  while True:
-    # Pedimos una frase al usuario
-    user = input("Tú: ").strip() # strip elimina espacios al inicio y final
-    if user.lower() in {"salir","exit","quit"}:
-      print("Bot: ","¡hasta pronto!")
-      break
-    # Modelo predice la respuesta
-    response = predict_answers(model,vectorize,unique_answers,user)
-    # Mostrar la respuesta en pantalla
-    print("Bot: ", response)
