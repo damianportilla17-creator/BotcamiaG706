@@ -19,7 +19,7 @@ def build_and_train_model(train_pairs):
     model = MultinomialNB()
     model.fit(x,y)
     # Crear carpeta para guardar el modelo si no exite 
-    os.makedirs(MODEL_DIR,exit_ok=True)
+    os.makedirs(MODEL_DIR,exist_ok=True)
     #Guardar los objetos entrenados 
     with open(MODEL_PATH,"wb") as f:
         pickle.dump(model,f)
@@ -36,7 +36,7 @@ def load_model():
         and os.path.exists(VECTORIZER_PATH)
         and os.path.exists(ANSWERS_PATH)
     ):
-        with open(MODEL_DIR,"rb") as f:
+        with open(MODEL_PATH,"rb") as f:
             model = pickle.load(f)
         with open(VECTORIZER_PATH,"rb") as f:
             vectorize = pickle.load(f)
@@ -47,7 +47,7 @@ def load_model():
     else:
         print("⚠️ No hay modelo guardado. Será necesario entrenarlo")
         return None,None,None
-    def predict_answer(model,vectorize,unique_answers,user_text):
-        X = vectorize.transfor ([user_text])
+def predict_answer(model,vectorize,unique_answers,user_text):
+        x = vectorize.transform([user_text])
         label = model.predict(x)[0]
         return unique_answers[label]
